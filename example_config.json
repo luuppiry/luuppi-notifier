@@ -1,0 +1,9 @@
+{
+	"feeds":[
+		{
+			"source": "https://cms.luuppi.fi/api/news",
+			"formatter": "news",
+			"path": "/rss/news.xml"
+		}
+	]
+}
