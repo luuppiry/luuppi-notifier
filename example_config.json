@@ -1,9 +1,58 @@
 {
-	"feeds":[
+	"news":[
 		{
-			"source": "https://cms.luuppi.fi/api/news",
-			"formatter": "news",
-			"path": "/rss/news.xml"
+			"source":{
+				"componentType": "strapiv4",
+				"conf": {
+					"urls": "https://cms.luuppi.fi/api/news"
+				}
+			},
+			"output": {
+				"componentType": "rss",
+				"conf": {
+					"title": "example",
+					"basePath": "https://luuppi.fi/fi/news/",
+					"description": "example desc",
+					"slug": "/rss/fi/news"
+				}
+			}
+		},
+		{
+			"source":{
+				"componentType": "strapiv4",
+				"conf": {
+					"urls": "https://cms.luuppi.fi/api/news?locale=en"
+				}
+			},
+			"output": {
+				"componentType": "rss",
+				"conf": {
+					"title": "example",
+					"basePath": "https://luuppi.fi/en/news/",
+					"description": "example desc",
+					"slug": "/rss/en/news"
+				}
+			}
+		}
+	
+	],
+	"events": [
+		{
+			"source":{
+				"componentType": "strapiv4",
+				"conf": {
+					"urls": "https://cms.luuppi.fi/api/events"
+				}
+			},
+			"output": {
+				"componentType": "rss",
+				"conf": {
+					"title": "example",
+					"basePath": "https://luuppi.fi/fi/events/",
+					"description": "example desc",
+					"slug": "/rss/events"
+				}
+			}
 		}
 	]
 }

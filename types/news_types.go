@@ -1,6 +1,9 @@
 package types
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 type Strapiv4News struct {
 	Data []Content_data
@@ -58,4 +61,15 @@ type NormalizedNews struct {
 	Slug        string
 	Published   time.Time
 	Locale      string
+}
+
+func (f *NormalizedNews) Rss_format(basePath string) (Rss_item, error) {
+	xi := Rss_item{}
+	link := fmt.Sprintf("%s%s", basePath, f.Slug)
+	xi.Title = f.Title
+	xi.Link = link
+	xi.Description = f.Description
+	xi.Guid = link
+	xi.PubDate = f.Published.String()
+	return xi, nil
 }
