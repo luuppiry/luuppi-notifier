@@ -82,3 +82,13 @@ func (f *NormalizedEvents) Rss_format(basePath string) (Rss_item, error) {
 	xi.PubDate = f.StartTime.String()
 	return xi, nil
 }
+
+func (f *NormalizedEvents) Discord_format() (Discord_message, error) {
+	content := ""
+	return Discord_message{
+		Id:        f.Id,
+		Content:   content,
+		Published: &f.Published,
+		Locale:    "fi",
+	}, nil
+}

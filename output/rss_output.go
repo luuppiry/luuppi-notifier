@@ -2,7 +2,6 @@ package output
 
 import (
 	"encoding/xml"
-	"errors"
 	"fmt"
 	"net/http"
 
@@ -35,7 +34,7 @@ func (h *Rss_output) Update(data []Formattable) error {
 	}
 	out, err := xml.MarshalIndent(xo, "", "  ")
 	if err != nil {
-		return errors.New(fmt.Sprintf("Failed to marshal xml: %s in: %s", err, h))
+		return fmt.Errorf("Failed to marshal xml: %w in: %s", err, h)
 	}
 	h.data = []byte(xml.Header + string(out))
 

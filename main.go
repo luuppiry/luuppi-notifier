@@ -56,6 +56,8 @@ func ChooseOutputter(outputType string, conf map[string]string) (Outputter, erro
 	switch outputType {
 	case "rss":
 		return output.NewRssOutput(conf), nil
+	case "discord":
+		return output.NewDiscordOutput(conf), nil
 	default:
 		return nil, errors.New(fmt.Sprintf("Unknown outputter: %s", outputType))
 	}
@@ -110,7 +112,11 @@ func initialize(conf Config) error {
 		if err != nil {
 			return err
 		}
-		outputter.Initialize()
+		err = outputter.Initialize()
+		if err != nil {
+			log.Printf("Failed initializing output for a pipeline: %s", err)
+			return err
+		}
 		go pipeline(source, outputter)
 
 	}

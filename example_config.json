@@ -33,6 +33,24 @@
 					"slug": "/rss/en/news"
 				}
 			}
+		},
+		{
+			"source":{
+				"componentType": "strapiv4",
+				"conf": {
+					"urls": "https://cms.luuppi.fi/api/news?locale=en,https://cms.luuppi.fi/api/news?populate=banner?locale=fi"
+				}
+			},
+			"output": {
+				"componentType": "discord",
+				"conf": {
+					"token":"",
+					"server": "689169090388164630",
+					"channel": "1305143345756241971",
+					"basePath": "https://luuppi.fi",
+					"contentBasePath": "https://cms.luuppi.fi"
+				}
+			}
 		}
 	
 	],

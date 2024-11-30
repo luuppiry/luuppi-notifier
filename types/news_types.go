@@ -17,6 +17,10 @@ type Content_data struct {
 	Attributes StrapiNewsAttributes
 }
 
+type Banner struct {
+	Url string
+}
+
 type StrapiNewsAttributes struct {
 	Title       string
 	AuthorName  string
@@ -29,6 +33,7 @@ type StrapiNewsAttributes struct {
 	UpdatedAt   time.Time
 	Locale      string
 	PublishedAt time.Time
+	Banner      Banner
 }
 
 func (s *Strapiv4News) MapToNormalizedNews() []NormalizedNews {
@@ -48,6 +53,7 @@ func mapToNormalizedNews(c Content_data) *NormalizedNews {
 		Slug:        c.Attributes.Slug,
 		Published:   c.Attributes.PublishedAt,
 		Locale:      c.Attributes.Locale,
+		BannerURL:   c.Attributes.Banner.Url,
 	}
 }
 
@@ -61,6 +67,7 @@ type NormalizedNews struct {
 	Slug        string
 	Published   time.Time
 	Locale      string
+	BannerURL   string
 }
 
 func (f *NormalizedNews) Rss_format(basePath string) (Rss_item, error) {
@@ -72,4 +79,16 @@ func (f *NormalizedNews) Rss_format(basePath string) (Rss_item, error) {
 	xi.Guid = link
 	xi.PubDate = f.Published.String()
 	return xi, nil
+}
+
+func (f *NormalizedNews) Discord_format() (Discord_message, error) {
+	content := f.Description
+	return Discord_message{
+		Id:        f.Slug,
+		Content:   content,
+		Published: &f.Published,
+		Locale:    f.Locale,
+		Title:     f.Title,
+		Image:     f.BannerURL,
+	}, nil
 }
