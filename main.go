@@ -13,6 +13,7 @@ import (
 
 	"github.com/luuppiry/luuppi-rss-service/fetchers"
 	"github.com/luuppiry/luuppi-rss-service/output"
+	"github.com/luuppiry/luuppi-rss-service/types"
 )
 
 var configPath = flag.String("configPath", "/config.json", "path to config.json")
@@ -32,7 +33,7 @@ type Component struct {
 	Conf          map[string]string
 }
 type Fetcher interface {
-	Fetch() ([]output.Formattable, error)
+	Fetch() ([]types.Notification, error)
 }
 
 func ChooseFetcher(sourceType string, fetcherType string, conf map[string]string) (Fetcher, error) {
@@ -49,7 +50,7 @@ func ChooseFetcher(sourceType string, fetcherType string, conf map[string]string
 
 type Outputter interface {
 	Initialize() error
-	Update([]output.Formattable) error
+	Update([]types.Notification) error
 }
 
 func ChooseOutputter(outputType string, conf map[string]string) (Outputter, error) {

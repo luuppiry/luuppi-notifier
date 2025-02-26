@@ -6,9 +6,7 @@ import (
 	"fmt"
 	"log"
 	"slices"
-	"sort"
 	"strings"
-	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/luuppiry/luuppi-rss-service/types"
@@ -20,6 +18,7 @@ type Discord_output struct {
 	channel         string
 	basePath        string
 	contentBasePath string
+	locale          string
 	connection      *discordgo.Session
 	cache           map[string]cache_data
 }
@@ -67,62 +66,62 @@ func (d *Discord_output) Initialize() error {
 		return fmt.Errorf("Failed to fetch previous messages from discord channel %w", err)
 	}
 	for _, msg := range msgs {
-		before, _, found := strings.Cut(msg.Content, "\n")
-		if !found {
-			//Expect that this is just someone elses message and skip
-			continue
+		if len(msg.Embeds) == 1 {
+			before, _, found := strings.Cut(msg.Embeds[0].Description, "\n")
+			if !found {
+				//Expect that this is just someone elses message and skip
+				continue
+			}
+			h, err := decode(before)
+			if err != nil || h.version != "v1" {
+				//Expect that this is just someone elses message and skip
+				continue
+			}
+			d.cache[h.id] = cache_data{msg_id: msg.ID, hash: h.hash}
 		}
-		h, err := decode(before)
-		if err != nil || h.version != "v1" {
-			//Expect that this is just someone elses message and skip
-			continue
-		}
-		d.cache[h.id] = cache_data{msg_id: msg.ID, hash: h.hash}
 	}
-
 	return nil
 }
 
-func (d *Discord_output) Update(data []Formattable) error {
+func (o *Discord_output) Update(data []types.Notification) error {
 	formatted := []types.Discord_message{}
 	for _, d := range data {
-		f, err := d.Discord_format()
+		f, err := d.Discord_format(o.basePath, o.locale)
 		if err != nil {
 			log.Printf("Formatting discord message failed %v", d)
 			continue
 		}
 		formatted = append(formatted, f)
 	}
-	correlated := correlate(formatted)
-	sort.Slice(correlated, func(i, j int) bool { return correlated[i][0].Published.Compare(*correlated[j][0].Published) > 0 })
+	slices.SortFunc(formatted, func(a, b types.Discord_message) int { return a.Published.Compare(*b.Published) })
 	//create new posts if any
-	for _, c := range correlated {
-		id, post := combine(c, d.basePath, d.contentBasePath)
-		if _, ok := d.cache[id]; ok {
-			break
+	for _, c := range formatted {
+		if _, ok := o.cache[c.Id]; ok {
+			continue
 		}
+		post := c.Content
 		hasher := sha1.New()
 		hasher.Write([]byte(post.Description))
 		header := luuppi_discord_header_protocol{
-			id:      id,
+			id:      c.Id,
 			version: "v1",
 			hash:    base64.URLEncoding.EncodeToString(hasher.Sum(nil)),
 		}
 		post.Description = header.encode() + "\n" + post.Description
-		msg, err := d.connection.ChannelMessageSendEmbed(d.channel, post)
+		msg, err := o.connection.ChannelMessageSendEmbed(o.channel, post)
 		if err != nil {
 			return err
 		}
-		d.cache[id] = cache_data{msg_id: msg.ID, hash: header.hash}
+		o.cache[c.Id] = cache_data{msg_id: msg.ID, hash: header.hash}
 	}
 	//update posts
-	for _, c := range correlated {
-		id, post := combine(c, d.basePath, d.contentBasePath)
-		cached, ok := d.cache[id]
+	for _, c := range formatted {
+		cached, ok := o.cache[c.Id]
 		if !ok {
 			//we are only updating here, if not found do nothing
 			continue
 		}
+		post := c.Content
 		hasher := sha1.New()
 		hasher.Write([]byte(post.Description))
 		hash := base64.URLEncoding.EncodeToString(hasher.Sum(nil))
@@ -130,81 +129,19 @@ func (d *Discord_output) Update(data []Formattable) error {
 			continue
 		}
 		header := luuppi_discord_header_protocol{
-			id:      id,
+			id:      c.Id,
 			version: "v1",
 			hash:    hash,
 		}
 		post.Description = header.encode() + "\n" + post.Description
-		msg, err := d.connection.ChannelMessageEditEmbed(d.channel, cached.msg_id, post)
+		msg, err := o.connection.ChannelMessageEditEmbed(o.channel, cached.msg_id, post)
 		if err != nil {
 			return err
 		}
-		d.cache[id] = cache_data{msg_id: msg.ID, hash: header.hash}
+		o.cache[c.Id] = cache_data{msg_id: msg.ID, hash: header.hash}
 	}
 
 	return nil
-}
-func correlate(data []types.Discord_message) [][]types.Discord_message {
-	ret := [][]types.Discord_message{}
-	cutoff := len(data)
-	for i := 0; i < cutoff; i++ {
-		n := data[i]
-		c := closure(*n.Published)
-		same := []types.Discord_message{}
-		same = append(same, n)
-		start := i + 1
-		for true {
-			matching := slices.IndexFunc(data[start:cutoff], c)
-			if matching == -1 {
-				break
-			}
-			same = append(same, data[matching+start])
-			data[matching+start], data[cutoff-1] = data[cutoff-1], data[matching+start]
-			cutoff--
-		}
-		ret = append(ret, same)
-	}
-	return ret
-}
-
-func closure(a time.Time) func(types.Discord_message) bool {
-	return func(nn types.Discord_message) bool {
-		return isCloseInTime(a, *nn.Published)
-	}
-}
-
-func isCloseInTime(a, b time.Time) bool {
-	return a.Truncate(30 * time.Minute).Equal(b.Truncate(30 * time.Minute))
-}
-
-func combine(data []types.Discord_message, basePath string, contentBasePath string) (string, *discordgo.MessageEmbed) {
-	sort.Slice(data, func(i, j int) bool { return data[i].Id < data[j].Id })
-	ids := []string{}
-	contents := []string{}
-	titles := []string{}
-	slug := ""
-	banner := ""
-	ind := slices.IndexFunc(data, func(e types.Discord_message) bool { return e.Locale == "fi" })
-	if ind != -1 {
-		slug = data[ind].Id
-		banner = data[ind].Image
-	}
-	for _, d := range data {
-		ids = append(ids, d.Id)
-		titles = append(titles, d.Title)
-		withLink := d.Content + "\n" + basePath + "/" + d.Locale + "/news/" + slug
-		contents = append(contents, withLink)
-	}
-	id := strings.Join(ids, "")
-	title := strings.Join(titles, "/")
-	content := strings.Join(contents, "\n-----\n")
-	return id, &discordgo.MessageEmbed{
-		URL:         basePath + "/fi" + "/news/" + slug,
-		Type:        discordgo.EmbedTypeArticle,
-		Description: content,
-		Title:       title,
-		Image:       &discordgo.MessageEmbedImage{URL: contentBasePath + banner},
-	}
 }
 
 func NewDiscordOutput(conf map[string]string) *Discord_output {
@@ -214,6 +151,7 @@ func NewDiscordOutput(conf map[string]string) *Discord_output {
 		channel:         conf["channel"],
 		basePath:        conf["basePath"],
 		contentBasePath: conf["contentBasePath"],
+		locale:          conf["locale"],
 		cache:           map[string]cache_data{},
 	}
 }

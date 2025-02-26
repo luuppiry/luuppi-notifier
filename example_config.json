@@ -10,10 +10,11 @@
 			"output": {
 				"componentType": "rss",
 				"conf": {
-					"title": "example",
-					"basePath": "https://luuppi.fi/fi/news/",
+					"title": "example fi",
+					"basePath": "https://luuppi.fi",
 					"description": "example desc",
-					"slug": "/rss/fi/news"
+					"slug": "/rss/fi/news",
+					"locale": "fi"
 				}
 			}
 		},
@@ -21,16 +22,17 @@
 			"source":{
 				"componentType": "strapiv4",
 				"conf": {
-					"urls": "https://cms.luuppi.fi/api/news?locale=en"
+					"urls": "https://cms.luuppi.fi/api/news?populate=localizations"
 				}
 			},
 			"output": {
 				"componentType": "rss",
 				"conf": {
-					"title": "example",
-					"basePath": "https://luuppi.fi/en/news/",
+					"title": "example en",
+					"basePath": "https://luuppi.fi",
 					"description": "example desc",
-					"slug": "/rss/en/news"
+					"slug": "/rss/news",
+					"locale": "en"
 				}
 			}
 		},
@@ -38,7 +40,7 @@
 			"source":{
 				"componentType": "strapiv4",
 				"conf": {
-					"urls": "https://cms.luuppi.fi/api/news?locale=en,https://cms.luuppi.fi/api/news?populate=banner?locale=fi"
+					"urls": "https://cms.luuppi.fi/api/news?populate=localizations"
 				}
 			},
 			"output": {
@@ -46,7 +48,7 @@
 				"conf": {
 					"token":"",
 					"server": "689169090388164630",
-					"channel": "1305143345756241971",
+					"channel": "1344439769060343808",
 					"basePath": "https://luuppi.fi",
 					"contentBasePath": "https://cms.luuppi.fi"
 				}
@@ -65,10 +67,11 @@
 			"output": {
 				"componentType": "rss",
 				"conf": {
-					"title": "example",
-					"basePath": "https://luuppi.fi/fi/events/",
+					"title": "example events",
+					"basePath": "https://luuppi.fi",
 					"description": "example desc",
-					"slug": "/rss/events"
+					"slug": "/rss/events",
+					"locale": "fi"
 				}
 			}
 		}

@@ -1,12 +1,13 @@
 package types
 
-import "time"
+import (
+	"time"
+
+	"github.com/bwmarrin/discordgo"
+)
 
 type Discord_message struct {
 	Id        string
 	Published *time.Time
-	Content   string
-	Locale    string
-	Title     string
-	Image     string
+	Content   *discordgo.MessageEmbed
 }

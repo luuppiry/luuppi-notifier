@@ -14,6 +14,7 @@ type Rss_output struct {
 	basePath           string
 	channelDescription string
 	data               []byte
+	locale             string
 }
 
 func (h *Rss_output) Initialize() error {
@@ -21,12 +22,12 @@ func (h *Rss_output) Initialize() error {
 	return nil
 }
 
-func (h *Rss_output) Update(data []Formattable) error {
+func (h *Rss_output) Update(data []types.Notification) error {
 	xo := types.Rss{}
 	xo.Version = "2.0"
 	xo.Channel = types.Rss_channel{Title: h.channelTitle, Link: h.basePath, Description: h.channelDescription}
 	for _, d := range data {
-		o, err := d.Rss_format(h.basePath)
+		o, err := d.Rss_format(h.basePath, h.locale)
 		if err != nil {
 			return err
 		}
@@ -51,5 +52,6 @@ func NewRssOutput(conf map[string]string) *Rss_output {
 		channelTitle:       conf["title"],
 		basePath:           conf["basePath"],
 		channelDescription: conf["description"],
+		locale:             conf["locale"],
 	}
 }
