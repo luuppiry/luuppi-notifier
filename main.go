@@ -68,7 +68,7 @@ func ParseConfig(data []byte) Config {
 	c := Config{}
 	err := json.Unmarshal(data, &c)
 	if err != nil {
-		log.Fatal("Failed to parse config", err)
+		log.Fatal("Failed to parse config ", err)
 	}
 	return c
 }

@@ -1,11 +1,13 @@
+export CGO_ENABLED=0
 
 .PHONY: build test clean run
 build: clean
-	-mkdir build
+	mkdir -p build
 	go build -o build/notifier .
 
 test:
-	go test .
+	go vet
+	go test ./... -coverprofile cover.out
 
 clean:
 	rm -rf build
