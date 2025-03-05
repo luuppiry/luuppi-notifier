@@ -43,3 +43,18 @@ jobs:
             BUILDKIT_INLINE_CACHE=1
           platforms: linux/amd64
           provenance: false
+      - name: Deploy to Production
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd luuppi-notifier/compose
+            git fetch
+            git reset --hard origin/master
+            docker login -u ${{ secrets.REGISTRY_USERNAME }} -p ${{ secrets.REGISTRY_PASSWORD }} ${{ secrets.REGISTRY }}
+            docker pull ${{ secrets.REGISTRY }}/luuppi-notifier:latest
+            docker compose -f docker-compose.yml down
+            docker compose -f docker-compose.yml up -d

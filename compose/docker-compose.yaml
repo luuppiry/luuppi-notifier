@@ -1,0 +1,13 @@
+services:
+  notifier:
+    image: luuppi.azurecr.io/luuppi-notifier:latest
+    restart: unless-stopped
+    ports:
+     - 42069:42069
+    volumes:
+     - ./config.json:/config.json:rw
+    networks:
+     - weba-network
+networks:
+    weba-network:
+      external: true
