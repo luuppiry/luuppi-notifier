@@ -70,7 +70,7 @@ func (f *Notification) Rss_format(basePath string, locale string) (Rss_item, err
 		xi.Link = link
 		xi.Description = desc.String()
 		xi.Guid = link
-		xi.PubDate = f.Published.String()
+		xi.PubDate = f.StartTime.String()
 		return xi, nil
 	}
 	if f.NotificationType == News {
