@@ -53,7 +53,7 @@ jobs:
           script: |
             cd luuppi-notifier/compose
             git fetch
-            git reset --hard origin/master
+            git reset --hard origin/main
             docker login -u ${{ secrets.REGISTRY_USERNAME }} -p ${{ secrets.REGISTRY_PASSWORD }} ${{ secrets.REGISTRY }}
             docker pull ${{ secrets.REGISTRY }}/luuppi-notifier:latest
             docker compose -f docker-compose.yaml down
