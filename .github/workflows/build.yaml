@@ -56,5 +56,5 @@ jobs:
             git reset --hard origin/master
             docker login -u ${{ secrets.REGISTRY_USERNAME }} -p ${{ secrets.REGISTRY_PASSWORD }} ${{ secrets.REGISTRY }}
             docker pull ${{ secrets.REGISTRY }}/luuppi-notifier:latest
-            docker compose -f docker-compose.yml down
-            docker compose -f docker-compose.yml up -d
+            docker compose -f docker-compose.yaml down
+            docker compose -f docker-compose.yaml up -d
