@@ -10,9 +10,9 @@
 			"output": {
 				"componentType": "rss",
 				"conf": {
-					"title": "example fi",
+					"title": "Luupin uutiset",
 					"basePath": "https://luuppi.fi",
-					"description": "example desc",
+					"description": "Luupin uutiset",
 					"slug": "/fi/news",
 					"locale": "fi"
 				}
@@ -28,9 +28,9 @@
 			"output": {
 				"componentType": "rss",
 				"conf": {
-					"title": "example en",
+					"title": "Luuppi news",
 					"basePath": "https://luuppi.fi",
-					"description": "example desc",
+					"description": "Luuppi news in english",
 					"slug": "/en/news",
 					"locale": "en"
 				}
@@ -48,9 +48,9 @@
 			"output": {
 				"componentType": "rss",
 				"conf": {
-					"title": "example events",
+					"title": "Luupin tapahtumat",
 					"basePath": "https://luuppi.fi",
-					"description": "example desc",
+					"description": "Luupin tapahtumat",
 					"slug": "/fi/events",
 					"locale": "fi"
 				}
@@ -66,9 +66,9 @@
 			"output": {
 				"componentType": "rss",
 				"conf": {
-					"title": "example events",
+					"title": "Luuppi events",
 					"basePath": "https://luuppi.fi",
-					"description": "example desc",
+					"description": "Luuppi events in english",
 					"slug": "/en/events",
 					"locale": "en"
 				}
