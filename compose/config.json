@@ -13,7 +13,7 @@
 					"title": "example fi",
 					"basePath": "https://luuppi.fi",
 					"description": "example desc",
-					"slug": "/rss/fi/news",
+					"slug": "/fi/news",
 					"locale": "fi"
 				}
 			}
@@ -31,7 +31,7 @@
 					"title": "example en",
 					"basePath": "https://luuppi.fi",
 					"description": "example desc",
-					"slug": "/rss/news",
+					"slug": "/en/news",
 					"locale": "en"
 				}
 			}
@@ -51,10 +51,29 @@
 					"title": "example events",
 					"basePath": "https://luuppi.fi",
 					"description": "example desc",
-					"slug": "/rss/events",
+					"slug": "/fi/events",
 					"locale": "fi"
 				}
 			}
+		},
+		{
+			"source":{
+				"componentType": "strapiv4",
+				"conf": {
+					"urls": "https://cms.luuppi.fi/api/events"
+				}
+			},
+			"output": {
+				"componentType": "rss",
+				"conf": {
+					"title": "example events",
+					"basePath": "https://luuppi.fi",
+					"description": "example desc",
+					"slug": "/en/events",
+					"locale": "en"
+				}
+			}
 		}
+
 	]
 }
