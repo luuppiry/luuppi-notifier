@@ -35,26 +35,7 @@
 					"locale": "en"
 				}
 			}
-		},
-		{
-			"source":{
-				"componentType": "strapiv4",
-				"conf": {
-					"urls": "https://cms.luuppi.fi/api/news?populate=localizations"
-				}
-			},
-			"output": {
-				"componentType": "discord",
-				"conf": {
-					"token":"",
-					"server": "689169090388164630",
-					"channel": "1344439769060343808",
-					"basePath": "https://luuppi.fi",
-					"contentBasePath": "https://cms.luuppi.fi"
-				}
-			}
 		}
-	
 	],
 	"events": [
 		{

@@ -50,7 +50,7 @@ func decode(h string) (*luuppi_discord_header_protocol, error) {
 	}, nil
 
 }
-func (d *Discord_output) Initialize() error {
+func (d *Discord_output) Initialize(_ *[]string) error {
 	dc, err := discordgo.New("Bot " + d.token)
 	if err != nil {
 		return fmt.Errorf("Failed creating discord session %w", err)

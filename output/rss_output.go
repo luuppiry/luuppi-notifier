@@ -17,7 +17,8 @@ type Rss_output struct {
 	locale             string
 }
 
-func (h *Rss_output) Initialize() error {
+func (h *Rss_output) Initialize(discoveryList *[]string) error {
+	*discoveryList = append(*discoveryList, h.slug)
 	http.Handle(h.slug, h)
 	return nil
 }

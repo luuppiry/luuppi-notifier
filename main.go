@@ -5,6 +5,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"html/template"
 	"io"
 	"log"
 	"net/http"
@@ -18,6 +19,7 @@ import (
 
 var configPath = flag.String("configPath", "/config.json", "path to config.json")
 var serverPort = flag.Uint("port", 42069, "Port where data is served")
+var discoveryList = []string{}
 
 type Config struct {
 	News   []Pipeline
@@ -49,7 +51,7 @@ func ChooseFetcher(sourceType string, fetcherType string, conf map[string]string
 }
 
 type Outputter interface {
-	Initialize() error
+	Initialize(*[]string) error
 	Update([]types.Notification) error
 }
 
@@ -113,7 +115,7 @@ func initialize(conf Config) error {
 		if err != nil {
 			return err
 		}
-		err = outputter.Initialize()
+		err = outputter.Initialize(&discoveryList)
 		if err != nil {
 			log.Printf("Failed initializing output for a pipeline: %s", err)
 			return err
@@ -130,17 +132,22 @@ func initialize(conf Config) error {
 		if err != nil {
 			return err
 		}
-		outputter.Initialize()
+		outputter.Initialize(&discoveryList)
 		go pipeline(source, outputter)
 
 	}
 	return nil
 }
 
+var discoveryPageTemplate = template.Must(template.New("").Parse("<html><body><h1>Discovery page</h1><div><ul>{{range .}}<li><a href=\"{{.}}\">{{.}}</a></li>{{end}}<ul></body></html>"))
+
 func main() {
 	flag.Parse()
 	conf := ReadConfig(*configPath)
 	initialize(conf)
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		discoveryPageTemplate.Execute(w, discoveryList)
+	})
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *serverPort), nil))
 
 }
