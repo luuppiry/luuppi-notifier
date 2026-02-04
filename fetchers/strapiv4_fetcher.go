@@ -20,7 +20,14 @@ type Strapiv4NewsFetcher struct {
 func (f *Strapiv4NewsFetcher) Fetch() ([]types.Notification, error) {
 	ret := []types.Notification{}
 	for _, url := range f.urls {
-		res, err := http.Get(url)
+		req, err := http.NewRequest("GET", url, nil)
+		if err != nil {
+			return nil, err
+		}
+		req.Header.Set("Strapi-Response-Format", "v4")
+
+		client := &http.Client{}
+		res, err := client.Do(req)
 		if err != nil {
 			return nil, err
 		}
@@ -147,7 +154,14 @@ type Strapiv4EventsFetcher struct {
 func (f *Strapiv4EventsFetcher) Fetch() ([]types.Notification, error) {
 	ret := []types.Notification{}
 	for _, url := range f.urls {
-		res, err := http.Get(url)
+		req, err := http.NewRequest("GET", url, nil)
+		if err != nil {
+			return nil, err
+		}
+		req.Header.Set("Strapi-Response-Format", "v4")
+
+		client := &http.Client{}
+		res, err := client.Do(req)
 		if err != nil {
 			return nil, err
 		}
