@@ -206,6 +206,8 @@ type StrapiEventsAttributes struct {
 	DescriptionFi utils.RTF
 	DescriptionEn utils.RTF
 	Id            string
+	Slug          string
+	DocumentId    string
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 	PublishedAt   time.Time
@@ -228,9 +230,9 @@ func eventToNotification(c Strapiv4EventContents) *types.Notification {
 		TitleEn:          c.Attributes.NameEn,
 		DescriptionFi:    utils.ParseRTFJson(c.Attributes.DescriptionFi),
 		DescriptionEn:    utils.ParseRTFJson(c.Attributes.DescriptionEn),
-		ID:               c.Attributes.Id,
-		SlugFi:           fmt.Sprintf("/fi/events/%d", c.Id),
-		SlugEn:           fmt.Sprintf("/en/events/%d", c.Id),
+		ID:               c.Attributes.DocumentId,
+		SlugFi:           fmt.Sprintf("/fi/events/%s", c.Attributes.Slug),
+		SlugEn:           fmt.Sprintf("/en/events/%s", c.Attributes.Slug),
 		Published:        c.Attributes.PublishedAt,
 		StartTime:        c.Attributes.StartDate,
 		CreateTime:       c.Attributes.CreatedAt,
